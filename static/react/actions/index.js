@@ -1,64 +1,59 @@
 import fetch from 'isomorphic-fetch'
 
-export const REQUEST_POSTS = 'REQUEST_POSTS'
-export const RECEIVE_POSTS = 'RECEIVE_POSTS'
-export const SELECT_REDDIT = 'SELECT_REDDIT'
-export const INVALIDATE_REDDIT = 'INVALIDATE_REDDIT'
 
-export function selectReddit(reddit) {
-  return {
-    type: SELECT_REDDIT,
-    reddit
-  }
-}
+export const TODOS_REQUEST = 'TODOS_REQUEST'
+export const TODOS_SUCCESS = 'TODOS_SUCCESS'
+export const TODOS_FAILURE = 'TODOS_FAILURE'
 
-export function invalidateReddit(reddit) {
-  return {
-    type: INVALIDATE_REDDIT,
-    reddit
-  }
-}
-
-function requestPosts(reddit) {
-  return {
-    type: REQUEST_POSTS,
-    reddit
-  }
-}
-
-function receivePosts(reddit, json) {
-  return {
-    type: RECEIVE_POSTS,
-    reddit,
-    posts: json.data.children.map(child => child.data),
-    receivedAt: Date.now()
-  }
-}
-
-function fetchPosts(reddit) {
-  return dispatch => {
-    dispatch(requestPosts(reddit))
-    return fetch(`https://www.reddit.com/r/${reddit}.json`)
-      .then(response => response.json())
-      .then(json => dispatch(receivePosts(reddit, json)))
-  }
-}
-
-function shouldFetchPosts(state, reddit) {
-  const posts = state.postsByReddit[reddit]
-  if (!posts) {
-    return true
-  }
-  if (posts.isFetching) {
-    return false
-  }
-  return posts.didInvalidate
-}
-
-export function fetchPostsIfNeeded(reddit) {
+export function loadTodos() {
+  console.log("获取数据");
   return (dispatch, getState) => {
-    if (shouldFetchPosts(getState(), reddit)) {
-      return dispatch(fetchPosts(reddit))
-    }
+    dispatch(requestTodos());
+    return fetch('/todo/api/v1.0/todos')
+      .then(response =>
+        response.json().then(json => ({ json, response }))
+      ).then(({ json, response }) => {
+          if (!response.ok) {
+              dispatch(requestTodosFailure())
+          }
+          dispatch(requestTodosSuccess(json))
+      })
+  }
+
+}
+
+export function requestTodoList() {
+  dispatch(requestTodos());
+  return fetch('/todo/api/v1.0/todos')
+    .then(response =>
+      response.json().then(json => ({ json, response }))
+    ).then(({ json, response }) => {
+        console.log(json);
+        if (!response.ok) {
+            dispatch(requestTodosFailure())
+        }
+        console.log(json);
+        dispatch(requestTodosSuccess(json))
+    })
+}
+
+function requestTodos() {
+  return {
+    type: TODOS_REQUEST,
+  }
+}
+
+function requestTodosFailure() {
+  return {
+    type: TODOS_FAILURE,
+  }
+}
+
+function requestTodosSuccess(json) {
+  console.log(json);
+  return {
+    type: TODOS_SUCCESS,
+    data: json,
+    receivedAt: Date.now()
   }
 }

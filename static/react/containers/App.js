@@ -1,42 +1,29 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
-import { selectReddit, fetchPostsIfNeeded, invalidateReddit } from '../actions'
+import {loadTodos } from '../actions'
 
 class App extends Component {
   constructor(props) {
     super(props)
-    this.handleChange = this.handleChange.bind(this)
     this.handleRefreshClick = this.handleRefreshClick.bind(this)
   }
 
   componentDidMount() {
-    const { dispatch, selectedReddit } = this.props
-    dispatch(fetchPostsIfNeeded(selectedReddit))
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.selectedReddit !== this.props.selectedReddit) {
-      const { dispatch, selectedReddit } = nextProps
-      dispatch(fetchPostsIfNeeded(selectedReddit))
-    }
-  }
-
-  handleChange(nextReddit) {
-    this.props.dispatch(selectReddit(nextReddit))
+    const { dispatch } = this.props
+    dispatch(loadTodos())
   }
 
   handleRefreshClick(e) {
-    e.preventDefault()
-
-    const { dispatch, selectedReddit } = this.props
-    dispatch(invalidateReddit(selectedReddit))
-    dispatch(fetchPostsIfNeeded(selectedReddit))
+    console.log("刷新数据");
+    const { dispatch } = this.props
+    dispatch(loadTodos())
   }
 
   render() {
-    const { selectedReddit, posts, isFetching, lastUpdated } = this.props
+    const {isFetching, lastUpdated } = this.props
     return (
       <div>
+        <h1>Test Demo</h1>
         <p>
           {lastUpdated &&
             <span>
@@ -44,12 +31,10 @@ class App extends Component {
               {' '}
             </span>
           }
-          {!isFetching &&
-            <a href="#"
-               onClick={this.handleRefreshClick}>
-              Refresh
-            </a>
-          }
+          <a href="#"
+             onClick={this.handleRefreshClick}>
+            Refresh
+          </a>
         </p>
       </div>
     )
@@ -57,27 +42,19 @@ class App extends Component {
 }
 
 App.propTypes = {
-  selectedReddit: PropTypes.string.isRequired,
-  posts: PropTypes.array.isRequired,
   isFetching: PropTypes.bool.isRequired,
   lastUpdated: PropTypes.number,
   dispatch: PropTypes.func.isRequired
 }
 
 function mapStateToProps(state) {
-  const { selectedReddit, postsByReddit } = state
   const {
     isFetching,
-    lastUpdated,
-    items: posts
-  } = postsByReddit[selectedReddit] || {
-    isFetching: true,
-    items: []
+    lastUpdated
+  } = {
+    isFetching: true
   }
-
   return {
-    selectedReddit,
-    posts,
     isFetching,
     lastUpdated
   }

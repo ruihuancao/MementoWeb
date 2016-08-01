@@ -1,2 +1,3 @@
 Flask
 leancloud-sdk
+flask-restful

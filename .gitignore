@@ -3,4 +3,4 @@ __pycache__/
 
 start.sh
 .avoscloud/
-.idea/
+.idea/.avoscloud/
