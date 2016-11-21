@@ -2,9 +2,11 @@ import { combineReducers } from 'redux'
 import * as ActionTypes from '../actions'
 
 
-function selectedTodos(state = {
-  isFetching: false
-}, action) {
+const selectedTodos = (
+    state = {
+    isFetching: false},
+        action
+) => {
   switch (action.type) {
     case ActionTypes.TODOS_REQUEST:
       return Object.assign({}, state, {
@@ -25,9 +27,12 @@ function selectedTodos(state = {
   }
 }
 
-function selectedTodoList(state = {
-  isFetching: false
-}, action) {
+const selectedTodoList = (
+    state = {
+        isFetching: false
+    },
+        action) =>
+{
   switch (action.type) {
     case ActionTypes.TODOS_REQUEST:
       return Object.assign({}, state, {

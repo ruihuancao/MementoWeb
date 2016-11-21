@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import {loadTodos } from '../actions'
 
 class App extends Component {
+
   constructor(props) {
     super(props)
     this.handleRefreshClick = this.handleRefreshClick.bind(this)
