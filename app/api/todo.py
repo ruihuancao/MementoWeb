@@ -1,6 +1,7 @@
 __author__ = 'caoruihuan'
 
 from flask_restful import reqparse, abort, Resource
+import requests
 
 TODOS = {
     'todo1': {'task': 'build an API'},
@@ -39,7 +40,8 @@ class Todo(Resource):
 # shows a list of all todos, and lets you POST to add new tasks
 class TodoList(Resource):
     def get(self):
-        return TODOS
+        r = requests.get('https://api.douban.com/v2/book/1220562')
+        return r.text
 
     def post(self):
         args = parser.parse_args()
@@ -47,5 +49,3 @@ class TodoList(Resource):
         todo_id = 'todo%i' % todo_id
         TODOS[todo_id] = {'task': args['task']}
         return TODOS[todo_id], 201
-
-
