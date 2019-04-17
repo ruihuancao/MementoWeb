@@ -1,27 +1,26 @@
 from flask import Flask
 from flask_restful import Api
-from flask import render_template
-from api.todo import Todo, TodoList
-import requests
-from .home import home
-
+from app.api.todo import Todo, TodoList
+from app.home import home
+from app.index import index
+from flask import redirect, url_for
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_object('config.default')
 app.config.from_pyfile('config.py')
-#app.config.from_envvar('APP_CONFIG_FILE')
 
 
 @app.route('/')
-def index(name=None):
-    item = {'url':'http://placehold.it/400x300', 'alt':'test'}
-    data = [item for i in range(100)]
-    title = 'test'
-    return render_template('index.html', name=name, data = data, title=title)
+def page():
+    return redirect(url_for('home.index'))
 
-
+#index page
+app.register_blueprint(index, url_prefix='/index')
+#home page
 app.register_blueprint(home, url_prefix='/home')
 
+
+#api
 api = Api(app)
 api.add_resource(TodoList, '/todo/api/v1.0/todos', endpoint = 'todos')
 api.add_resource(Todo, '/todos/<todo_id>')
